@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: hourly_grid_data
+    description: "Cleaned hourly energy metrics processed via Spark and loaded into BigQuery"
+    database: eia-project-490020
+    schema: eia_raw_data
+    tables:
+      - name: fuel_type
+        description: "Energy values broken down by fuel category (Nuclear, Coal, etc.)"
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+          - name: value
+            description: "The amount of energy generated"
+
+      - name: interchange
+        description: "Energy exchanges between different Balancing Authorities"
+        columns:  
+          - name: id
+            tests:
+              - unique
+              - not_null
+          - name: fromba
+            description: "Source Balancing Authority code"
+          - name: toba
+            description: "Destination Balancing Authority code"
+
+      - name: region
+        description: "Energy demand and day-ahead demand forecast"
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+          - name: value
+            description: "The amount of energy consumed"

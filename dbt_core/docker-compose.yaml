@@ -1,0 +1,14 @@
+services:
+  dbt:
+    image: ghcr.io/dbt-labs/dbt-bigquery:latest 
+    environment:
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - GCP_DATASET=${GCP_DATASET}
+    network_mode: "host"
+    volumes:
+      - ./dbt/eia_project:/usr/app
+      - ./profiles.yaml:/root/.dbt/profiles.yml
+      - ${GCP_SERVICE_ACCOUNT_PATH}:/root/key.json
+
+    stdin_open: true
+    tty: true

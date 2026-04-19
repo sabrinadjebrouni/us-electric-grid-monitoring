@@ -1,0 +1,81 @@
+BA Id,BA Code,BA Name,Time Zone,Region_Country Code,Region_Country Name,Generation Only BA,Demand by BA Subregion,US_BA,Active BA,Activation Date,Retirement Date,LATITUDE,LONGITUDE
+1,AEC,PowerSouth Energy Cooperative,Central,SE,Southeast,No,No,Yes,No,1900-01-01,2021-09-01,31.32,-86.46
+2,AECI,"Associated Electric Cooperative, Inc.",Central,MIDW,Midwest,No,No,Yes,Yes,1900-01-01,9999-12-31,38.6,-92.61
+3,AVA,Avista Corporation,Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,47.07,-116.91
+4,AVRN,"Avangrid Renewables, LLC",Pacific,NW,Northwest,Yes,No,Yes,Yes,2018-07-31,9999-12-31,45.53,-122.7
+5,AZPS,Arizona Public Service Company,Arizona,SW,Southwest,No,No,Yes,Yes,1900-01-01,9999-12-31,33.78,-112.05
+6,BANC,Balancing Authority of Northern California,Pacific,CAL,California,No,No,Yes,Yes,1900-01-01,9999-12-31,40.65,-123.11
+7,BPAT,Bonneville Power Administration,Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,45.13,-118.61
+8,CHPD,Public Utility District No. 1 of Chelan County,Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,47.87,-120.62
+9,CISO,California Independent System Operator,Pacific,CAL,California,No,Yes,Yes,Yes,1900-01-01,9999-12-31,37.02,-119.56
+10,CPLE,Duke Energy Progress East,Eastern,CAR,Carolinas,No,No,Yes,Yes,1900-01-01,9999-12-31,35.02,-78.79
+11,CPLW,Duke Energy Progress West,Eastern,CAR,Carolinas,No,No,Yes,Yes,1900-01-01,9999-12-31,35.67,-82.53
+12,DEAA,"Arlington Valley, LLC",Arizona,SW,Southwest,Yes,No,Yes,Yes,1900-01-01,9999-12-31,40.42,-74.41
+13,DOPD,PUD No. 1 of Douglas County,Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,48.26,-119.6
+14,DUK,Duke Energy Carolinas,Eastern,CAR,Carolinas,No,No,Yes,Yes,1900-01-01,9999-12-31,35.35,-81.25
+15,EEI,"Electric Energy, Inc.",Central,MIDW,Midwest,Yes,No,Yes,No,1900-01-01,2020-02-29,38.89,-77.02
+16,EPE,El Paso Electric Company,Arizona,SW,Southwest,No,No,Yes,Yes,1900-01-01,9999-12-31,30.36,-103.51
+17,ERCO,"Electric Reliability Council of Texas, Inc.",Central,TEX,Texas,No,Yes,Yes,Yes,1900-01-01,9999-12-31,31.3,-98.77
+18,FMPP,Florida Municipal Power Pool,Eastern,FLA,Florida,No,No,Yes,Yes,1900-01-01,9999-12-31,26.65,-80.47
+19,FPC,"Duke Energy Florida, Inc.",Eastern,FLA,Florida,No,No,Yes,Yes,1900-01-01,9999-12-31,28.43,-81.87
+20,FPL,Florida Power & Light Co.,Eastern,FLA,Florida,No,No,Yes,Yes,1900-01-01,9999-12-31,26.91,-80.82
+21,GCPD,"Public Utility District No. 2 of Grant County, Washington",Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,47.21,-119.45
+22,GLHB,GridLiance,Central,MIDW,Midwest,Yes,No,Yes,No,2020-02-29,2022-09-01,32.86,-96.94
+23,GRID,"Gridforce Energy Management, LLC",Pacific,NW,Northwest,Yes,No,Yes,Yes,1900-01-01,9999-12-31,29.71,-95.39
+24,GRIF,"Griffith Energy, LLC",Arizona,SW,Southwest,Yes,No,Yes,No,1900-01-01,2023-11-01,35.05,-114.14
+25,GRMA,"Gila River Power, LLC",Arizona,SW,Southwest,Yes,No,Yes,No,1900-01-01,2018-05-03,32.97,-112.84
+26,GVL,Gainesville Regional Utilities,Eastern,FLA,Florida,No,No,Yes,Yes,1900-01-01,9999-12-31,29.68,-82.36
+27,GWA,"NaturEner Power Watch, LLC",Mountain,NW,Northwest,Yes,No,Yes,Yes,1900-01-01,9999-12-31,48.51,-112.14
+28,HGMA,"New Harquahala Generating Company, LLC",Arizona,SW,Southwest,Yes,No,Yes,No,1900-01-01,2025-06-01,33.49,-113.11
+29,HST,City of Homestead,Eastern,FLA,Florida,No,No,Yes,Yes,1900-01-01,9999-12-31,25.61,-80.57
+30,IID,Imperial Irrigation District,Pacific,CAL,California,No,No,Yes,Yes,1900-01-01,9999-12-31,33.24,-115.58
+31,IPCO,Idaho Power Company,Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,43.87,-116.06
+32,ISNE,ISO New England,Eastern,NE,New England,No,Yes,Yes,Yes,1900-01-01,9999-12-31,43.19,-72.03
+33,JEA,JEA,Eastern,FLA,Florida,No,No,Yes,Yes,1900-01-01,9999-12-31,30.51,-85.09
+34,LDWP,Los Angeles Department of Water and Power,Pacific,CAL,California,No,No,Yes,Yes,1900-01-01,9999-12-31,36.73,-118.1
+35,LGEE,Louisville Gas and Electric Company and Kentucky Utilities Company,Eastern,MIDW,Midwest,No,No,Yes,Yes,1900-01-01,9999-12-31,38.05,-84.51
+36,MISO,"Midcontinent Independent System Operator, Inc.",Eastern,MIDW,Midwest,No,Yes,Yes,Yes,1900-01-01,9999-12-31,47.27,-100.44
+37,NEVP,Nevada Power Company,Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,39.24,-116.39
+38,NSB,Utilities Commission of New Smyrna Beach,Eastern,FLA,Florida,No,No,Yes,No,1900-01-01,2020-01-08,29.02,-80.92
+39,NWMT,NorthWestern Corporation,Mountain,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,46.78,-110.03
+40,NYIS,New York Independent System Operator,Eastern,NY,New York,No,Yes,Yes,Yes,1900-01-01,9999-12-31,43.06,-74.87
+41,OVEC,Ohio Valley Electric Corporation,Eastern,MIDA,Mid-Atlantic,No,No,Yes,No,1900-01-01,2018-12-01,39.01,-83.02
+42,PACE,PacifiCorp East,Mountain,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,35.9,-109.98
+43,PACW,PacifiCorp West,Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,43.53,-121.17
+44,PGE,Portland General Electric Company,Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,45.24,-122.63
+45,PJM,"PJM Interconnection, LLC",Eastern,MIDA,Mid-Atlantic,No,Yes,Yes,Yes,1900-01-01,9999-12-31,39.3,-80.16
+46,PNM,Public Service Company of New Mexico,Arizona,SW,Southwest,No,Yes,Yes,Yes,1900-01-01,9999-12-31,34.13,-106.42
+47,PSCO,Public Service Company of Colorado,Mountain,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,39.58,-106.55
+48,PSEI,"Puget Sound Energy, Inc.",Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,47.39,-121.55
+49,SC,South Carolina Public Service Authority,Eastern,CAR,Carolinas,No,No,Yes,Yes,1900-01-01,9999-12-31,33.79,-80.5
+50,SCEG,"Dominion Energy South Carolina, Inc.",Eastern,CAR,Carolinas,No,No,Yes,Yes,1900-01-01,9999-12-31,33.43,-81.07
+51,SCL,Seattle City Light,Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,47.63,-122.33
+52,SEC,Seminole Electric Cooperative,Eastern,FLA,Florida,No,No,Yes,Yes,1900-01-01,9999-12-31,29.69,-82.87
+53,SEPA,Southeastern Power Administration,Central,SE,Southeast,Yes,No,Yes,Yes,1900-01-01,9999-12-31,36.15,-95.99
+54,SIKE,Sikeston Board Of Municipal Utilities,Central,MIDW,Midwest,Yes,No,Yes,Yes,2025-06-01,9999-12-31,36.87,-89.58
+55,SOCO,"Southern Company Services, Inc. - Trans",Central,SE,Southeast,No,No,Yes,Yes,1900-01-01,9999-12-31,32.37,-85.43
+56,SPA,Southwestern Power Administration,Central,CENT,Central,No,No,Yes,Yes,1900-01-01,9999-12-31,36.12,-90.56
+57,SRP,Salt River Project Agricultural Improvement and Power District,Arizona,SW,Southwest,No,No,Yes,Yes,1900-01-01,9999-12-31,33.25,-112.74
+58,SWPP,Southwest Power Pool,Central,CENT,Central,No,Yes,Yes,Yes,1900-01-01,9999-12-31,40.57,-99.44
+59,TAL,City of Tallahassee,Eastern,FLA,Florida,No,No,Yes,Yes,1900-01-01,9999-12-31,30.47,-84.27
+60,TEC,Tampa Electric Company,Eastern,FLA,Florida,No,No,Yes,Yes,1900-01-01,9999-12-31,27.91,-82.31
+61,TEPC,Tucson Electric Power,Arizona,SW,Southwest,No,No,Yes,Yes,1900-01-01,9999-12-31,35.36,-114.4
+62,TIDC,Turlock Irrigation District,Pacific,CAL,California,No,No,Yes,Yes,1900-01-01,9999-12-31,37.49,-120.91
+63,TPWR,"City of Tacoma, Department of Public Utilities, Light Division",Pacific,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,47.01,-122.09
+64,TVA,Tennessee Valley Authority,Central,TEN,Tennessee,No,No,Yes,Yes,1900-01-01,9999-12-31,35.41,-86.92
+65,WACM,Western Area Power Administration - Rocky Mountain Region,Arizona,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,41.26,-105.99
+66,WALC,Western Area Power Administration - Desert Southwest Region,Arizona,SW,Southwest,No,No,Yes,Yes,1900-01-01,9999-12-31,34.85,-111.96
+67,WAUE,Western Area Power Administration - Upper Great Plains East,Mountain,NW,Northwest,No,No,Yes,No,1900-01-01,2015-10-01,40.43,-104.99
+68,WAUW,Western Area Power Administration - Upper Great Plains West,Mountain,NW,Northwest,No,No,Yes,Yes,1900-01-01,9999-12-31,46.78,-107.7
+69,WWA,"NaturEner Wind Watch, LLC",Mountain,NW,Northwest,Yes,No,Yes,No,1900-01-01,2025-10-01,42.73,-106.35
+70,YAD,"Alcoa Power Generating, Inc. - Yadkin Division",Eastern,CAR,Carolinas,Yes,No,Yes,Yes,1900-01-01,9999-12-31,35.36,-80.19
+71,AESO,Alberta Electric System Operator,Mountain,CAN,Canada,No,No,No,Yes,1900-01-01,9999-12-31,51.04,-114.06
+72,BCHA,British Columbia Hydro and Power Authority,Pacific,CAN,Canada,No,No,No,Yes,1900-01-01,9999-12-31,49.28,-123.11
+73,HQT,Hydro-Quebec TransEnergie,Eastern,CAN,Canada,No,No,No,Yes,1900-01-01,9999-12-31,45.49,-73.57
+74,IESO,Ontario IESO,Eastern,CAN,Canada,No,No,No,Yes,1900-01-01,9999-12-31,43.64,-79.38
+75,MHEB,Manitoba Hydro,Central,CAN,Canada,No,No,No,Yes,1900-01-01,9999-12-31,49.89,-97.14
+76,NBSO,New Brunswick System Operator,Atlantic,CAN,Canada,No,No,No,Yes,1900-01-01,9999-12-31,45.96,-66.63
+77,SPC,Saskatchewan Power Corporation,Central,CAN,Canada,No,No,No,Yes,1900-01-01,9999-12-31,50.44,-104.61
+78,CEN,Centro Nacional de Control de Energia,Mountain,MEX,Mexico,No,No,No,Yes,2017-10-31,9999-12-31,19.35,-99.2
+79,CFE,Comision Federal de Electricidad,Central,MEX,Mexico,No,No,No,No,1900-01-01,2018-07-01,19.42,-99.15
+-1,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,Unknown,1900-01-01,9999-12-31,,

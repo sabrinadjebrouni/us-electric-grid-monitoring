@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: int_grid_data_unioned
+    description: "Intermediate union of generation, interchange, and demand data."
+    columns:
+      - name: period
+        description: "The timestamp of the grid operation"
+        tests:
+          - not_null
+      - name: ba_code
+        description: "The code for the Balancing Authority."
+        tests:
+          - not_null
+      - name: type_code
+        description: "The category of data (Fuel Type, FLOW, or Demand Type)."
+        tests:
+          - not_null
+      - name: related_ba
+        description: "The destination BA for interchange flows, set to 'Unknown' for others."
+        tests:
+          - not_null
+      - name: value
+        description: "The numeric value of the observation."
+        tests:
+          - not_null

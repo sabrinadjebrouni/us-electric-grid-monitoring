@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: dim_ba
+    description: "Dimension table containing detailed informations about Balancing Authorities."
+    columns:
+      - name: ba_id
+        description: "Primary key for the Balancing Authority."
+        tests:
+          - unique
+          - not_null
+      - name: ba_code
+        tests:
+          - not_null
+
+  - name: dim_date
+    description: "Date dimension generated from 2019 to 2030."
+    columns:
+      - name: date_id
+        description: "Primary key in YYYYMMDD format."
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_time_of_day
+    description: "Hourly time dimension from 0 to 23"
+    columns:
+      - name: time_id
+        description: "Primary key representing the hour of the day."
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_type
+    description: "Dimension for grid operation types for example Demand, Flow, Coal, Solar ...)."
+    columns:
+      - name: type_id
+        description: "Primary key for the type."
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_grid_operation
+    description: "Fact table containing hourly grid values partitioned by period."
+    columns:
+      - name: date_id
+        description: "Foreign key to dim_date."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_id
+      - name: time_id
+        description: "Foreign key to dim_time_of_day."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_time_of_day')
+              field: time_id
+      - name: type_id
+        description: "Foreign key to dim_type."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_type')
+              field: type_id
+      - name: ba_id
+        description: "Foreign key to dim_ba."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_ba')
+              field: ba_id
+      - name: related_ba_id
+        description: "Foreign key to dim_ba for interchanges between authorities, if another type than value in Unknown"
+        tests:
+          - not_null 
+          - relationships:
+              to: ref('dim_ba')
+              field: ba_id

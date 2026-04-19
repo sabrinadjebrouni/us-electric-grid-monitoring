@@ -1,0 +1,34 @@
+  GNU nano 7.2                                                            .gitignore
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+*.parquet
+*.env
+airflow/*.env
+dbt_core/*.env
+spark_jobs/*.env
+terraform/*.env
+*.env.prod
+*.tfstate
+*.tfstate.backup
+*.txt
+to_remove/
+./**/*.log
+terraform/.terraform
+terraform/.terraform.lock.hcl
+terraform/*.tfstate
+terraform/*.tfstate.backup
+.vscode
+eia-api/
+dbt_core/dbt/logs/*.log
+terraform/variables.tf
+airflow/logs/
+dashboard_streamlit/*.cfg
+dashboard_streamlit/.streamlit/secrets.toml

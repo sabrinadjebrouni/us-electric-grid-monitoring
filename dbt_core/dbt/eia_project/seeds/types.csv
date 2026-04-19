@@ -1,0 +1,21 @@
+Type ID,Type,Type Name
+1,D,Demand
+2,DF,Demand Forecast
+3,FLOW,Interchange
+4,SYS,All energy sources
+5,BAT,Battery storage
+6,WNB,Wind with integrated battery storage
+7,SNB,Solar with integrated battery storage
+8,PS,Pumped storage
+9,OES,Other energy storage
+10,UES,Unknown energy storage
+11,WND,Wind
+12,SUN,Solar
+13,WAT,Hydro and pumped storage
+14,GEO,Geothermal
+15,OTH,Other
+16,OIL,Petroleum
+17,NG,Natural gas
+18,COL,Coal
+19,NUC,Nuclear
+-1,UNK,Unknown
