@@ -7,6 +7,8 @@ import plotly.express as px
 from google.oauth2 import service_account
 from google.cloud import bigquery
 from datetime import timedelta
+import plotly.express as px
+from datetime import timedelta
 
 # --- PAGE CONFIG ---
 st.set_page_config(layout="wide", page_title="US Hourly Electric Grid Monitor", page_icon=":material/electrical_services:")
@@ -60,6 +62,7 @@ def get_static_skeleton():
     """
     return client.query(query).to_dataframe()
 
+
 # --- STEP 2: FETCH HOURLY TELEMETRY (Lightweight Query) ---
 @st.cache_data(ttl=600)
 def get_hourly_telemetry(date_obj, hour_val):
@@ -79,6 +82,62 @@ def get_hourly_telemetry(date_obj, hour_val):
     return client.query(query).to_dataframe()
 
 
+# Data for Combined Grid Operations
+@st.cache_data(ttl=3600)
+def get_timeseries_data(start_date, end_date):
+    query = f"""
+    SELECT 
+        d.full_date,
+        t.hour_24,
+        -- Combined Timestamp for Plotly
+        DATETIME(d.full_date, TIME(t.hour_24, 0, 0)) as timestamp,
+        
+        -- Aggregating specific types
+        SUM(CASE WHEN tp.type_code = 'D' THEN f.value ELSE 0 END) as demand,
+        SUM(CASE WHEN tp.type_code = 'DF' THEN f.value ELSE 0 END) as demand_forecast,
+        SUM(CASE WHEN tp.type_code = 'FLOW' THEN f.value ELSE 0 END) as total_interchange,
+        
+        -- Summing all generation sources (type_ids 4 through 19)
+        SUM(CASE WHEN f.type_id BETWEEN 4 AND 19 THEN f.value ELSE 0 END) as net_generation
+        
+    FROM `{dataset}.fct_grid_operation` f
+    JOIN `{dataset}.dim_date` d ON f.date_id = d.date_id
+    JOIN `{dataset}.dim_time_of_day` t ON f.time_id = t.time_id
+    JOIN `{dataset}.dim_type` tp ON f.type_id = tp.type_id
+    WHERE d.full_date BETWEEN '{start_date}' AND '{end_date}'
+    GROUP BY 1, 2, 3
+    ORDER BY d.full_date, t.hour_24
+    """
+    return client.query(query).to_dataframe()
+
+
+#Data for operation grouped by region
+@st.cache_data(ttl=3600)
+def get_regional_summary_data(start_date, end_date):
+    query = f"""
+    SELECT 
+        b.region_country_name,
+        CASE 
+            WHEN tp.type_code = 'D' THEN 'Demand'
+            WHEN tp.type_code = 'DF' THEN 'Demand Forecast'
+            WHEN tp.type_code = 'FLOW' THEN 'Total Interchange'
+            WHEN f.type_id BETWEEN 4 AND 19 THEN 'Net Generation'
+            ELSE 'Other'
+        END as category,
+        SUM(f.value) as total_value
+    FROM `{dataset}.fct_grid_operation` f
+    JOIN `{dataset}.dim_date` d ON f.date_id = d.date_id
+    JOIN `{dataset}.dim_ba` b ON f.ba_id = b.ba_id
+    JOIN `{dataset}.dim_type` tp ON f.type_id = tp.type_id
+    WHERE d.full_date BETWEEN '{start_date}' AND '{end_date}'
+      AND f.type_id != -1
+    GROUP BY 1, 2
+    HAVING category != 'Other'
+    ORDER BY total_value DESC
+    """
+    return client.query(query).to_dataframe()
+
+# DATA FOR NET GENERATION BY ENERGY TYPE 
 @st.cache_data(ttl=600)
 def get_weekly_gen_mix(start_date, end_date):
     query = f"""
@@ -101,14 +160,29 @@ st.markdown("---")
 
 # SECTION 1: MAP WITH LOCAL PARAMETERS
 with st.container():
-    st.subheader("📍 Real-Time Grid Topology & Interchanges")
+    st.subheader("Hourly Electricity Demand and Interchange per Balancing Authority")
     
-    # Local Parameters for Map
     c1, c2 = st.columns([1, 2])
+    
+    # Logic: Set a specific 'Launch' date or use the current date
+    # To use today: default_date = datetime.date.today()
+    default_date = pd.to_datetime("2026-04-07") 
+    default_hour = 1 # 1:00 PM
+    
     with c1:
-        map_date = st.date_input("Map Date", value=pd.to_datetime("2026-04-19"), key="map_date")
+        map_date = st.date_input(
+            "Map Date", 
+            value=default_date, 
+            key="map_date"
+        )
     with c2:
-        map_hour = st.slider("Map Hour", 0, 23, 13, key="map_hour")
+        map_hour = st.slider(
+            "Map Hour", 
+            min_value=0, 
+            max_value=23, 
+            value=default_hour, 
+            key="map_hour"
+        )
     
     # --- STEP 1: LOAD DATA ---
     skeleton_df = get_static_skeleton()
@@ -258,58 +332,181 @@ with st.container():
 
 st.markdown("---")
 
-# SECTION 2: WEEKLY ANALYSIS WITH LOCAL PARAMETERS
+
+
+# SECTION 2: Line chart for SUM of D, DF, FLOW and Net Generation
+st.subheader("Combined Grid Operations for: Demand, Net Generation, and Interchange")
+
+# Date Range Picker (Default: Last 7 days)
+col_a, col_b = st.columns(2)
+with col_a:
+    start_dt = st.date_input("Start Date", value=pd.to_datetime("2026-04-01"))
+with col_b:
+    end_dt = st.date_input("End Date", value=pd.to_datetime("2026-04-08"))
+
+# Fetch Data
+df_ts = get_timeseries_data(start_dt, end_dt)
+
+if not df_ts.empty:
+    fig_ts = go.Figure()
+
+    # Define the lines to plot
+    lines = [
+        ('demand', 'Demand', '#00a8ff', 'solid'),
+        ('demand_forecast', 'Demand Forecast', '#00a8ff', 'dot'),
+        ('net_generation', 'Net Generation', '#fbc531', 'solid'),
+        ('total_interchange', 'Total Interchange', '#4cd137', 'solid')
+    ]
+
+    for col, name, color, dash in lines:
+        fig_ts.add_trace(go.Scatter(
+            x=df_ts['timestamp'],
+            y=df_ts[col],
+            name=name,
+            line=dict(color=color, width=2, dash=dash),
+            mode='lines'
+        ))
+
+    fig_ts.update_layout(
+        template="plotly_dark",
+        hovermode="x unified",
+        xaxis_title="Date",
+        yaxis_title="Megawatthours (MWh)",
+        legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
+        margin=dict(l=0, r=0, t=20, b=0),
+        height=500,
+        # Synchronize Y-axis to handle the negative interchange if needed
+        yaxis=dict(zeroline=True, zerolinewidth=1, zerolinecolor='rgba(255,255,255,0.2)')
+    )
+
+    st.plotly_chart(fig_ts, use_container_width=True)
+else:
+    st.info("No data available for the selected date range.")
+
+
+st.markdown("---")
+
+
+
+# SECTION 3: REGIONAL ENERGY OVERVIEW
+st.subheader("Regional Energy Composition")
+
+# --- DATE PARAMETERS ---
+
+c1, c2 = st.columns(2)
+with c1:
+    bar_start = st.date_input("Start Date", value=pd.to_datetime("2026-04-01"), key="bar_start")
+with c2:
+    bar_end = st.date_input("End Date", value=pd.to_datetime("2026-04-08"), key="bar_end")
+
+# Fetch Data
+df_bar = get_regional_summary_data(bar_start, bar_end)
+
+if not df_bar.empty:
+
+    # Create the chart
+    fig_bar = px.bar(
+        df_bar,
+        x="category",
+        y="total_value",
+        color="region_country_name",
+        title=f"Totals by Region ({bar_start} to {bar_end})",
+        labels={
+            "category": "Metric",
+            "total_value": "Total MWh",
+            "region_country_name": "Region Name"
+        },
+        template="plotly_dark",
+        barmode="group" # 'group' for side-by-side comparison, 'stack' for total volume
+    )
+
+    fig_bar.update_layout(
+        xaxis={'categoryorder':'total descending'},
+        legend=dict(
+            orientation="h",
+            yanchor="bottom", y=-0.4,
+            xanchor="center", x=0.5
+        ),
+        height=600,
+        margin=dict(b=100) # Space for the horizontal legend
+    )
+
+    st.plotly_chart(fig_bar, use_container_width=True)
+else:
+    st.info("No data found for the selected range.")
+
+st.markdown("---")
+
+# SECTION 4: NET GENERATION BY ENERGY TYPE 
 with st.container():
-    st.subheader("📈 Energy Generation Mix (Weekly Interval)")
+    st.subheader("Electricity Generation By Energy Source")
     
-    # Local Parameters for Weekly Chart
+    # --- 1. SET DEFAULT DATES ---
     wc1, wc2 = st.columns(2)
     with wc1:
-        start_date = st.date_input("Start Date", value=pd.to_datetime("2026-04-12"), key="gen_start")
+        # Default start set to 2026-04-01
+        start_date = st.date_input("Start Date", value=pd.to_datetime("2026-04-01"), key="gen_start")
     with wc2:
-        end_date = st.date_input("End Date", value=start_date + timedelta(days=7), key="gen_end")
+        # Default end set to 2026-04-08
+        end_date = st.date_input("End Date", value=pd.to_datetime("2026-04-08"), key="gen_end")
     
     gen_df = get_weekly_gen_mix(start_date, end_date)
     
     if not gen_df.empty:
-        # Create a datetime column for a continuous X-axis
         gen_df['timestamp'] = pd.to_datetime(gen_df['full_date']) + pd.to_timedelta(gen_df['hour_24'], unit='h')
         
+        # --- 2. DEFINE HIGH-CONTRAST COLOR MAP ---
+        # This replaces px.colors.qualitative.Dark24 with industry-standard colors
+        color_map = {
+            "Solar": "#FFD700",          # Bright Yellow
+            "Wind": "#1B9E77",           # Green
+            "Natural gas": "#E69F00",    # Orange
+            "Coal": "#56B4E9",           # Light Blue
+            "Nuclear": "#9b59b6",        # Purple
+            "Hydro and pumped storage": "#0072B2", # Deep Blue
+            "Petroleum": "#8B4513",      # Brown
+            "Geothermal": "#D55E00",     # Vermillion
+            "Battery storage": "#CC79A7",# Pink
+            "Other": "#999999"           # Grey
+        }
+        
         fig_gen = px.area(
-            gen_df, x="timestamp", y="value", color="source",
-            color_discrete_sequence=px.colors.qualitative.Dark24
+            gen_df, 
+            x="timestamp", 
+            y="value", 
+            color="source",
+            # Apply the custom color map
+            color_discrete_map=color_map,
+            # Fallback to a bright palette if a source isn't in our map
+            color_discrete_sequence=px.colors.qualitative.Pastel
         )
-        fig_gen.update_layout(hovermode="x unified", height=500, xaxis_title="Time", yaxis_title="MW Generated")
+        
+        # --- 3. FIX UI CLARITY ---
+        fig_gen.update_layout(
+            hovermode="x unified", 
+            height=600, 
+            xaxis_title="Time", 
+            yaxis_title="MW Generated",
+            template="plotly_dark",
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=-0.3,
+                xanchor="center",
+                x=0.5
+            )
+        )
+        
+        # Improves line visibility between stacked areas
+        fig_gen.update_traces(line=dict(width=0.5))
+        
         st.plotly_chart(fig_gen, use_container_width=True)
     else:
         st.warning("No generation data for this period.")
 
 st.markdown("---")
 
-# SECTION 3: PERFORMANCE BAR CHART (WEEKLY)
-with st.container():
-    st.subheader("📊 Top Balancing Authorities (Weekly Total)")
-    
-    # Re-using the same date range from Section 2 or custom
-    st.info(f"Showing performance from {start_date} to {end_date}")
-    
-    # Simplified query for weekly sum per BA
-    query_top = f"""
-        SELECT ba.ba_code, SUM(f.value) as total_mw
-        FROM `{dataset}.fct_grid_operation` f
-        JOIN `{dataset}.dim_ba` ba ON f.ba_id = ba.ba_id
-        JOIN `{dataset}.dim_date` d ON f.date_id = d.date_id
-        WHERE d.full_date BETWEEN '{start_date}' AND '{end_date}'
-        GROUP BY 1 ORDER BY 2 DESC LIMIT 15
-    """
-    top_df = client.query(query_top).to_dataframe()
-    
-    if not top_df.empty:
-        fig_bar = px.bar(top_df, x='total_mw', y='ba_code', orientation='h', color='total_mw', color_continuous_scale='Turbo')
-        fig_bar.update_layout(height=500, showlegend=False)
-        st.plotly_chart(fig_bar, use_container_width=True)
 
 # RAW DATA EXPANDER AT THE VERY BOTTOM
-with st.expander("🔍 System Logs / Raw Data"):
-    st.write("Current Map Snapshot Data:")
+with st.expander("Hourly Electricity Demand and Interchange Data Visualisation:"):
     st.dataframe(df_map)
