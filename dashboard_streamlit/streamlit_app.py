@@ -110,14 +110,12 @@ with st.container():
     with c2:
         map_hour = st.slider("Map Hour", 0, 23, 13, key="map_hour")
     
-        # --- STEP 1: LOAD DATA ---
-    # This skeleton is cached and doesn't hit BigQuery every time
+    # --- STEP 1: LOAD DATA ---
     skeleton_df = get_static_skeleton()
-    # This telemetry is cheap and only pulls rows for the specific hour
     telemetry_df = get_hourly_telemetry(map_date, map_hour)
 
     # --- STEP 2: MERGE LOGIC ---
-    # First merge: Flow data (matches on both ba_id and related_ba_id)
+    # Merge Flow data
     df_combined = pd.merge(
         skeleton_df, 
         telemetry_df[telemetry_df['type_code'] == 'FLOW'], 
@@ -125,7 +123,7 @@ with st.container():
         how='left'
     )
 
-    # Second merge: Demand data (matches only on ba_id)
+    # Merge Demand data
     demand_data = telemetry_df[telemetry_df['type_code'] == 'D'][['ba_id', 'value']]
     df_map = pd.merge(
         df_combined, 
@@ -135,12 +133,29 @@ with st.container():
         suffixes=('_flow', '_demand')
     )
 
+    # --- STEP 2.5: PREPARE HOVER TEXT FOR NODES ---
+    # We group by BA to consolidate Demand and the Net Interchange for the tooltip
+    node_hover_df = df_map.groupby(['ba_id', 'ba_name', 'ba_code', 'latitude', 'longitude']).agg({
+        'value_demand': 'first',
+        'value_flow': 'sum'
+    }).reset_index()
+
+    def build_hover_text(row):
+        d_val = row['value_demand']
+        d_text = f"{d_val:,.0f} MW" if (pd.notnull(d_val) and d_val != 0) else "data unavailable"
+        
+        f_val = row['value_flow']
+        f_text = f"{f_val:,.0f} MW" if (pd.notnull(f_val) and f_val != 0) else "data unavailable"
+        
+        return f"<b>{row['ba_name']} ({row['ba_code']})</b><br>Demand: {d_text}<br>Net Interchange: {f_text}"
+
+    node_hover_df['custom_hover'] = node_hover_df.apply(build_hover_text, axis=1)
+
     # --- STEP 3: RENDER MAP ---
     if not df_map.empty:
         fig_map = go.Figure()
 
         # 1. SKELETON LAYER: Grey Edges (Physical Grid)
-        # We use skeleton_df directly to ensure the skeleton NEVER disappears
         for _, row in skeleton_df[skeleton_df['rel_lat'].notnull()].iterrows():
             fig_map.add_trace(go.Scattergeo(
                 lon=[row['longitude'], row['rel_lon']],
@@ -148,22 +163,22 @@ with st.container():
                 mode='lines',
                 line=dict(width=1, color='#d1d1d1'), 
                 opacity=0.3,
-                hoverinfo='none', showlegend=False
+                showlegend=False,
+                hoverinfo='none'
             ))
 
-        # 2. SKELETON LAYER: Black Nodes
+        # 2. SKELETON LAYER: Black Nodes (Now with Tooltips)
         fig_map.add_trace(go.Scattergeo(
-            lon=skeleton_df['longitude'],
-            lat=skeleton_df['latitude'],
+            lon=node_hover_df['longitude'],
+            lat=node_hover_df['latitude'],
             mode='markers',
             marker=dict(size=4, color='#2d3436'),
             hoverinfo='text',
-            text=skeleton_df['ba_code'],
+            text=node_hover_df['custom_hover'],
             showlegend=False
         ))
 
         # 3. LIVE DATA: Active Flows (Thick Colored Lines)
-        # We filter df_map for rows where 'value_flow' is not null and not 0
         active_flows = df_map[(df_map['value_flow'].notnull()) & (df_map['value_flow'] != 0)]
         for _, row in active_flows.iterrows():
             flow_color = '#00C853' if row['value_flow'] > 0 else '#FF3D00'
@@ -173,21 +188,22 @@ with st.container():
                 mode='lines',
                 line=dict(width=3, color=flow_color),
                 opacity=0.8,
+                showlegend=False,
                 hoverinfo='text',
-                text=f"Flow: {row['value_flow']:,} MW"
+                text=f"Flow: {row['ba_code']} ➔ {row['related_ba_id']}<br>Value: {row['value_flow']:,} MW"
             ))
-
+        
         # 4. LIVE DATA: Demand (Dynamic Bubbles)
-        # We use 'value_demand' which was merged in Step 2
-        nodes_live = df_map[df_map['value_demand'].notnull()]
+        nodes_live = node_hover_df[node_hover_df['value_demand'].notnull()]
         if not nodes_live.empty:
             v_max = nodes_live['value_demand'].max() or 1
             fig_map.add_trace(go.Scattergeo(
                 lon=nodes_live['longitude'],
                 lat=nodes_live['latitude'],
-                mode='markers+text',
-                text=nodes_live['ba_code'],
-                textposition="top center",
+                mode='markers',
+                hoverinfo='text',
+                text=nodes_live['custom_hover'],
+                showlegend=False,
                 marker=dict(
                     size=10 + (nodes_live['value_demand'] / v_max) * 35,
                     color=nodes_live['value_demand'],
@@ -198,18 +214,47 @@ with st.container():
                 )
             ))
 
-        # 5. LAYOUT CONFIGURATION
+        # 5. CUSTOM LEGEND (Dummy Traces)
+        legend_data = [
+            ("#00C853", "In-flow (negative interchange)"),
+            ("#FF3D00", "Out-Flow (positive interchange)"),
+            ("#d1d1d1", "No Flow (no interchange)")
+        ]
+        for color, name in legend_data:
+            fig_map.add_trace(go.Scattergeo(
+                lon=[None], lat=[None], mode='lines',
+                line=dict(width=3, color=color),
+                name=name, showlegend=True
+            ))
+
+        # 6. LAYOUT CONFIGURATION
         fig_map.update_layout(
             geo=dict(
                 scope='usa', projection_type='albers usa',
                 showland=True, landcolor="#f1f2f6", subunitcolor="#dfe4ea"
             ),
-            margin={"r":0,"t":40,"l":0,"b":0}, height=750
+            margin={"r":0,"t":40,"l":0,"b":0}, 
+            height=750,
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=-0.1,             # Slightly below the map
+                xanchor="center",
+                x=0.5,
+                # IMPROVEMENTS FOR VISIBILITY:
+                bgcolor="rgba(0,0,0,0)",    # Fully transparent background
+                font=dict(
+                    size=12,
+                    color="white"           # Or "black" if your app theme is light
+                ),
+                itemsizing="constant"       # Makes the legend lines easier to see
+            )
         )
-
+        
         st.plotly_chart(fig_map, use_container_width=True)
     else:
-        st.warning("⚠️ No grid data found for the selected time.")
+        st.error("⚠️ No grid data found for the selected time.")
 
 st.markdown("---")
 
