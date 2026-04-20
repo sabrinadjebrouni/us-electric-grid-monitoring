@@ -18,7 +18,6 @@ terraform/*.env
 *.env.prod
 *.tfstate
 *.tfstate.backup
-*.txt
 to_remove/
 ./**/*.log
 terraform/.terraform
@@ -32,3 +31,5 @@ terraform/variables.tf
 airflow/logs/
 dashboard_streamlit/*.cfg
 dashboard_streamlit/.streamlit/secrets.toml
+References.txt
+schema.txt
