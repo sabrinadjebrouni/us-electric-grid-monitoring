@@ -19,7 +19,6 @@
 * [Data Pipeline Architecture](#data-pipeline-architecture)
 * [Dashboard Features](#dashboard-features)
 * [How to run](#how-to-run)
-* [Conclusion](#conclusion)
 * [References](#references)
 
 
@@ -34,7 +33,7 @@ A **Balancing Authority (BA)** is an organization responsible for ensuring that 
 
 If they don't keep that balance, the grid becomes unstable, which can cause frequency issues or blackouts.
 
-This is a list of of some types of data served by the Api, that I used in this project:
+This is a list of of some types of data served by the Api ([link to source](https://www.eia.gov/opendata/browser/electricity/rto)), that I used in this project:
 
 - **Hourly Demand**:
 Demand is the total amount of electricity being consumed in a specific area. To find this metric, a BA takes all the power it produces and subtracts any power it sends away to other BAs. What is left over is what was actually used by the people and businesses in that area.
@@ -82,8 +81,111 @@ An area chart displaying the daily generation by source type used to power the g
 ![chart 4](./images/generation-type.png)
 
 ## How to run
-## Conclusion
 
+Follow these steps to run the project :
+
+### 1. Prerequisites
+
+- **An EIA API key** : by registering using the registration form [this link](https://www.eia.gov/opendata/). The process is easy and response is quick. You need to store the key in a secure location and use it in this project.
+
+- **Google Cloud Platform**: An active account.
+
+- **Terraform**: Installed locally.
+
+- **Docker**: For running Airflow and dbt.
+
+- **GCP Service Account**: A key file (`credentials.json`) with permissions for GCS, BigQuery, and Dataproc/Spark.
+
+
+### 2. Setup Terraform
+First, complete the file `\terraform\variables.tf` to profide informations needed to create the bucket and dataset then run the following commands :
+
+```bash
+cd terraform
+terraform init
+terraform plan 
+terraform apply
+```
+
+### 3. Orchestration with Airflow
+#### Data Availability
+The EIA publishes different grid metrics on varying schedules. All the DAGs are designed to respect this schedule :
+
+- **Hourly Demand and Demand Forecast**: Available hourly (1 hour after the operating hour ends).
+
+- **Net Generation & Fuel Mix**: Available daily by 15:00 UTC for the previous day.
+
+- **Interchange**: Available daily by 15:00 UTC for two days prior.
+
+Start the Airflow environment to begin data ingestion and Spark processing.
+1. Place your GCP service account and EIA api key paths in `.env`, a template is available [here](#environment-variables)
+2. Launch the containers:
+```bash
+cd ../airflow
+docker-compose up -d
+```
+3. Access the Airflow UI at `localhost:8080`.
+4. Trigger DAGs: 
+    * Activate your dags and setup the connexion to CGP (follow [instructions](https://airflow.apache.org/docs/apache-airflow/3.1.7/howto/connection.html#visibility-in-ui-and-cli) )
+    * The `fetch_...` DAGs first ingest raw JSON from EIA into GCS as parquet files. They will run automatically at the scheduled time.
+    The parquet files are named following the pattern **(api_route/YYYY/MM/DD/data.parquet)** to make them easily requested by spark jobs that take the date **(YYYY/MM/DD)** as an argument of wich data to process.
+    * Run the `spark_job_...` DAGs to transform the GCS parquet files and load it into BigQuery staging tables.
+    * Run **Backfills** for data from 2019-01-01 (this can take an hour because of relly big amount of data and api limitations)
+
+**NB:** The specific throttles for the API are less than ~9,000 requests per hour and your burst rate beneath 5 per second. This is already being handled in the airflow DAGs.
+
+### 4. Data Modeling with dbt
+Once the cleaned data is in BigQuery, use **dbt** to build the dimensional model (Star Schema).
+```bash
+cd ../dbt_core
+docker compose run --rm dbt seed
+docker compose run --rm dbt run
+docker compose run --rm dbt test
+```
+This command will run the seeds (BA and Type mapping), then run the models, and finally perform data quality tests.
+
+The documentation is generated using this command :
+
+```bash
+docker compose run --rm -p 8081:8080 dbt docs serve
+```
+Access the generated documentation at `localhost:8081`.
+
+### 5. Launch the Streamlit Dashboard
+Finally, run the interactive visualization locally.
+1. Create a `.streamlit/secrets.toml` file with your GCP credentials.
+2. Install dependencies and run:
+```bash
+cd ../dashboard_streamlit
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
+### Environment Variables
+To run this project, you need to create a .env file in the root directory. Use the following template:
+
+```Bash
+# Airflow Configuration
+AIRFLOW_UID=1000
+
+# GCP Credentials & Project Info
+GCP_PROJECT_ID=
+GCP_DATASET=
+GCP_SERVICE_ACCOUNT_PATH=/path/to/your/gcp-service-account.json
+EIA_API_KEY_PATH=/path/to/your/eia-api-key.json
+
+# Cloud Storage Buckets
+GCP_BUCKET_NAME=
+GCP_BUCKET_SOURCE_NAME=
+
+# Spark Configuration
+CLUSTER_NAME=eia-spark-cluster
+SPARK_REGION_JOB_PATH=/path/to/your/spark_jobs/transform_and_load_region.py
+SPARK_FUEL_TYPE_JOB_PATH=/path/to/your/spark_jobs/transform_and_load_fuel_type.py
+SPARK_INTERCHANGE_JOB_PATH=/path/to/your/spark_jobs/transform_and_load_interchange.py
+```
+## Kimball Star Schema
+
+![Star Schema](./images/model.png)
 
 ## References
 <details>

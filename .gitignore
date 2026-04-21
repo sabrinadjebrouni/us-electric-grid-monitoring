@@ -27,7 +27,6 @@ terraform/*.tfstate.backup
 .vscode
 eia-api/
 dbt_core/dbt/logs/*.log
-terraform/variables.tf
 airflow/logs/
 dashboard_streamlit/*.cfg
 dashboard_streamlit/.streamlit/secrets.toml
