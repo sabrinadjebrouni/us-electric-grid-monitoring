@@ -12,17 +12,18 @@ from pyspark.sql import functions as F
 
 if __name__ == "__main__":
 
-    date_path = sys.argv[1]  # must be format YYYY/MM/DD
-    project_id = sys.argv[2]
-    bucket_name = sys.argv[3]
-    dataset_id = sys.argv[4]
+    #date_path = sys.argv[1]  # must be format YYYY/MM/DD
+    project_id = sys.argv[1]
+    bucket_name = sys.argv[2]
+    dataset_id = sys.argv[3]
 
     # Create a SparkSession (entry point to Spark functionality)
     spark = SparkSession.builder \
         .appName('transforming eia fuel type data') \
         .getOrCreate()
 
-    df_fuel_type = spark.read.parquet(f"gs://{bucket_name}/fuel_type_data/{date_path}/*.parquet")
+    #df_fuel_type = spark.read.parquet(f"gs://{bucket_name}/fuel_type_data/{date_path}/*.parquet")
+    df_fuel_type = spark.read.parquet(f"gs://{bucket_name}/fuel_type_data/*/*/*/*.parquet")
 
     df_fuel_type_formatted = df_fuel_type \
         .withColumn("period", to_timestamp(col("period"), "yyyy-MM-dd'T'HH")) \

@@ -12,10 +12,10 @@ from pyspark.sql import functions as F
 
 if __name__ == "__main__":
 
-    date_path = sys.argv[1]  # must be format YYYY/MM/DD
-    project_id = sys.argv[2]
-    bucket_name = sys.argv[3]
-    dataset_id = sys.argv[4]
+    #date_path = sys.argv[1]  # must be format YYYY/MM/DD
+    project_id = sys.argv[1]
+    bucket_name = sys.argv[2]
+    dataset_id = sys.argv[3]
 
     # Create a SparkSession (entry point to Spark functionality)
     spark = SparkSession.builder \
@@ -23,8 +23,8 @@ if __name__ == "__main__":
         .getOrCreate()
 
 
-    df_interchange = spark.read.parquet(f"gs://{bucket_name}/interchange_data/{date_path}/*.parquet")
-
+    #df_interchange = spark.read.parquet(f"gs://{bucket_name}/interchange_data/{date_path}/*.parquet")
+    df_interchange = spark.read.parquet(f"gs://{bucket_name}/interchange_data/*/*/*/*.parquet")
 
     df_interchange_formatted = df_interchange \
         .withColumn("period", to_timestamp(col("period"), "yyyy-MM-dd'T'HH")) \

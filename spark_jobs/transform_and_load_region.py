@@ -12,17 +12,18 @@ from pyspark.sql import functions as F
 
 if __name__ == "__main__":
 
-    date_path = sys.argv[1]  # must be format YYYY/MM/DD
-    project_id = sys.argv[2]
-    bucket_name = sys.argv[3]
-    dataset_id = sys.argv[4]
+    #date_path = sys.argv[1]  # must be format YYYY/MM/DD
+    project_id = sys.argv[1]
+    bucket_name = sys.argv[2]
+    dataset_id = sys.argv[3]
     
     # Create a SparkSession (entry point to Spark functionality)
     spark = SparkSession.builder \
         .appName('transforming eia region data') \
         .getOrCreate()
 
-    df_region = spark.read.parquet(f"gs://{bucket_name}/region_data/{date_path}/*.parquet")
+    #df_region = spark.read.parquet(f"gs://{bucket_name}/region_data/{date_path}/*.parquet")
+    df_region = spark.read.parquet(f"gs://{bucket_name}/region_data/*/*/*/*.parquet")
 
     df_region_formatted = df_region \
         .withColumn("period", to_timestamp(col("period"), "yyyy-MM-dd'T'HH")) \
