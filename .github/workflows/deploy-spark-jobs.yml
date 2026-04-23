@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - update-gcp-account
+      - update-gcp-account 
     paths:
       - 'spark_jobs/**'  # Only triggers if files in this folder change
   workflow_dispatch:
-  
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

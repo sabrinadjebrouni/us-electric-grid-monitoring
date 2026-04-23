@@ -9,8 +9,6 @@ from pyspark.sql.functions import col, sha2, concat_ws
 from pyspark.sql import functions as F
 
 
-
-
 if __name__ == "__main__":
 
     date_path = sys.argv[1]  # must be format YYYY/MM/DD
