@@ -11,7 +11,7 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
 
 
-> **Live Demo:** [us-electric-grid-monitoring-sabrina-djebrouni.streamlit.app](https://us-electric-grid-monitoring-sabrina-djebrouni.streamlit.app/)
+> **Live Demo:** [us-electric-grid-monitoring-sabrina-djebrouni.streamlit.app](https://us-electric-grid-monitoring.streamlit.app/)
 
 ---
 ## Table of Content
