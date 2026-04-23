@@ -18,6 +18,7 @@ terraform/*.env
 *.env.prod
 *.tfstate
 *.tfstate.backup
+*.tfvars
 to_remove/
 ./**/*.log
 terraform/.terraform

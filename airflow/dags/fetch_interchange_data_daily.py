@@ -12,7 +12,7 @@ from airflow.providers.google.cloud.hooks.gcs import GCSHook
 from airflow.sdk import task
 import time
 from airflow.models.taskinstance import TaskInstance
-from airflow.providers.standard.operators import TriggerDagRunOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 GCS_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
 GCS_BUCKET_NAME = os.getenv("GCP_BUCKET_NAME")
@@ -89,7 +89,7 @@ def _upload_to_gcs(route_name, all_records, data_interval_start):
 
 
 with DAG(
-    dag_id="fetch_fuel_type_data_daily",
+    dag_id="fetch_interchange_data_daily",
     schedule=CronDataIntervalTimetable("5 13 * * *", timezone="UTC"), #daily at 3:05pm UTC
     start_date=pendulum.datetime(year=2019, month=1, day=1),
     end_date=pendulum.datetime(year=2030, month=12, day=31),

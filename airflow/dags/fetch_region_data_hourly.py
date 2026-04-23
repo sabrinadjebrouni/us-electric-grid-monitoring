@@ -12,7 +12,7 @@ from airflow.providers.google.cloud.hooks.gcs import GCSHook
 from airflow.sdk import task
 import time
 from airflow.models.taskinstance import TaskInstance
-from airflow.providers.standard.operators import TriggerDagRunOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 GCS_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
 GCS_BUCKET_NAME = os.getenv("GCP_BUCKET_NAME")
