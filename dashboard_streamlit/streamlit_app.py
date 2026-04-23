@@ -9,7 +9,7 @@ from google.cloud import bigquery
 from datetime import timedelta
 import plotly.express as px
 from datetime import timedelta
-
+import os
 # --- PAGE CONFIG ---
 st.set_page_config(layout="wide", page_title="US Hourly Electric Grid Monitor", page_icon=":material/electrical_services:")
 
@@ -37,7 +37,11 @@ st.markdown("""
 # --- BIGQUERY CLIENT ---
 credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
 client = bigquery.Client(credentials=credentials)
-dataset = "eia-project-490020.eia_raw_data"
+
+project_id = st.secrets["GCP_PROJECT_ID"]
+dataset_id = st.secrets["GCP_DATASET"]
+
+dataset = f"{project_id}.{dataset_id}"
 
 # --- DATA FETCHING FUNCTIONS ---
 

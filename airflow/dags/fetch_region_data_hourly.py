@@ -90,7 +90,7 @@ def _upload_to_gcs(route_name, all_records, data_interval_start):
 
 with DAG(
     dag_id="fetch_region_data_hourly",
-    schedule=CronDataIntervalTimetable("0 13 * * *", timezone="UTC"),
+    schedule=CronDataIntervalTimetable("0 * * * *", timezone="UTC"),
     start_date=pendulum.datetime(year=2019, month=1, day=1),
     end_date=pendulum.datetime(year=2030, month=12, day=31),
     catchup=False,
@@ -122,7 +122,7 @@ with DAG(
         else:
             print(f"No data found for {API_NAME} at {start_period}")   
             
-    '''trigger_spark_job = TriggerDagRunOperator(
+    trigger_spark_job = TriggerDagRunOperator(
         task_id="trigger_spark_job",
         trigger_dag_id="spark_job_transform_region",
         conf={
@@ -131,6 +131,5 @@ with DAG(
         },
     )
 
-    fetch_and_upload_to_gcs() >> trigger_spark_job'''
+    fetch_and_upload_to_gcs() >> trigger_spark_job
 
-    fetch_and_upload_to_gcs()

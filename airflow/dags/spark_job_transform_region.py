@@ -36,7 +36,7 @@ with DAG(
         "placement": {"cluster_name": CLUSTER_NAME},
         "pyspark_job": {
             "main_python_file_uri": PYSPARK_JOB_PATH,
-            "args" : [GCS_PROJECT_ID, GCS_BUCKET_NAME, GCS_DATASET_NAME]
+            "args" : [date, GCS_PROJECT_ID, GCS_BUCKET_NAME, GCS_DATASET_NAME]
         } 
     }
 

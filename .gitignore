@@ -29,7 +29,10 @@ terraform/*.tfstate.backup
 eia-api/
 dbt_core/dbt/logs/*.log
 airflow/logs/
+airflow/dags/__pycache__/
 dashboard_streamlit/*.cfg
 dashboard_streamlit/.streamlit/secrets.toml
+dashboard_streamlit/.venv/
 References.txt
 schema.txt
+

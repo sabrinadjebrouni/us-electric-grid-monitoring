@@ -3,8 +3,8 @@ version: 2
 sources:
   - name: hourly_grid_data
     description: "Cleaned hourly energy metrics processed via Spark and loaded into BigQuery"
-    database: eia-project-490020
-    schema: eia_raw_data
+    database: "{{ env_var('GCP_PROJECT_ID') }}"
+    schema: "{{ env_var('GCP_DATASET') }}"
     tables:
       - name: fuel_type
         description: "Energy values broken down by fuel category (Nuclear, Coal, etc.)"

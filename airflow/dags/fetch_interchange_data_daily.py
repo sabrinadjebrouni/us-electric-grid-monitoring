@@ -122,9 +122,8 @@ with DAG(
         else:
             print(f"No data found for {API_NAME} at {start_period}")
 
-    fetch_and_upload_to_gcs()
 
-"""     trigger_spark_job = TriggerDagRunOperator(
+    trigger_spark_job = TriggerDagRunOperator(
         task_id="trigger_spark_job",
         trigger_dag_id="spark_job_transform_interchange",
         conf={
@@ -133,6 +132,6 @@ with DAG(
         },
     )
 
-    fetch_and_upload_to_gcs() >> trigger_spark_job """
+    fetch_and_upload_to_gcs() >> trigger_spark_job
 
     
