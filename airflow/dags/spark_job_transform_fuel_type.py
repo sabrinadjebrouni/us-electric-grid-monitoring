@@ -17,7 +17,7 @@ from airflow.providers.google.cloud.operators.dataproc import DataprocSubmitJobO
 GCS_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
 GCS_BUCKET_NAME = os.getenv("GCP_BUCKET_NAME")
 PYSPARK_JOB_PATH = os.getenv("SPARK_FUEL_TYPE_JOB_PATH")
-
+GCS_DATASET_NAME = os.getenv("GCP_DATASET")
 REGION="us-central1"
 GCP_CONN_ID = "google_cloud_default"
 CLUSTER_NAME = os.getenv("CLUSTER_NAME")
@@ -36,7 +36,7 @@ with DAG(
         "placement": {"cluster_name": CLUSTER_NAME},
         "pyspark_job": {
             "main_python_file_uri": PYSPARK_JOB_PATH,
-            "args" : [date]
+            "args" : [date, GCS_PROJECT_ID, GCS_BUCKET_NAME, GCS_DATASET_NAME]
         } 
     }
 
