@@ -12,13 +12,19 @@ provider "google" {
   project     = var.project_name
 }
 
-resource "google_storage_bucket" "raw_data" {
+resource "google_storage_bucket" "grid_data" {
   name          = var.gcs_bucket_name
   location      = var.location
   force_destroy = true
 } /*force_destroy - (Optional, Default: false) When deleting a bucket,
   this boolean option will delete all contained objects. 
   If you try to delete a bucket that contains objects, Terraform will fail that run.*/
+
+resource "google_storage_bucket" "scripts" {
+  name          = var.gcs_scripts_bucket_name
+  location      = var.location
+  force_destroy = true
+}
 
 resource "google_bigquery_dataset" "dataset" {
   dataset_id                 = var.bq_dataset_name
@@ -28,8 +34,8 @@ resource "google_bigquery_dataset" "dataset" {
 
 
 resource "google_dataproc_cluster" "dataproc_cluster" {
-  name     = "eia-spark-cluster"
-  region   = "us-central1"
+  name     = var.dataproc_cluster_name
+  region   = var.region
 
   cluster_config {
 
@@ -50,7 +56,7 @@ resource "google_dataproc_cluster" "dataproc_cluster" {
 
     worker_config {
       num_instances    = 2
-      machine_type     = "n1-standard-8" 
+      machine_type     = "n1-standard-4" 
       disk_config {
         boot_disk_size_gb = 30  #set disk size to 30GB, default value is 500GB
       }

@@ -12,7 +12,7 @@ from airflow.providers.google.cloud.hooks.gcs import GCSHook
 from airflow.sdk import task
 import time
 from airflow.models.taskinstance import TaskInstance
-from airflow.providers.standard.operators import TriggerDagRunOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 GCS_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
 GCS_BUCKET_NAME = os.getenv("GCP_BUCKET_NAME")
@@ -94,7 +94,7 @@ with DAG(
     start_date=pendulum.datetime(year=2019, month=1, day=1),
     end_date=pendulum.datetime(year=2030, month=12, day=31),
     catchup=False,
-    max_active_runs=20 
+    #max_active_runs=20 
 ):
     
     @task(pool="fetch_rto_data_pool")
@@ -132,3 +132,4 @@ with DAG(
     )
 
     fetch_and_upload_to_gcs() >> trigger_spark_job
+

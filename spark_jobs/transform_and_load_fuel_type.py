@@ -9,12 +9,13 @@ from pyspark.sql.functions import col, sha2, concat_ws
 from pyspark.sql import functions as F
 
 
+
 if __name__ == "__main__":
 
     date_path = sys.argv[1]  # must be format YYYY/MM/DD
-    bucket_name = os.getenv("GCP_BUCKET_NAME")
-    project_id = os.getenv("GCP_PROJECT_ID")
-    dataset_id = os.getenv("GCP_DATASET")
+    project_id = sys.argv[2]
+    bucket_name = sys.argv[3]
+    dataset_id = sys.argv[4]
 
     # Create a SparkSession (entry point to Spark functionality)
     spark = SparkSession.builder \
